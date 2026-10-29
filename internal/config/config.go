@@ -142,6 +142,10 @@ type KernelConfig struct {
 	// customization of dns, outbounds, endpoints, route, experimental, etc.
 	// Compatible with V2bX OriginalPath format.
 	CustomConfig string `yaml:"custom_config"`
+
+	// HY2Masquerade is the sing-box hysteria2 masquerade value (e.g.
+	// "file:///etc/xboard-node/www") served to clients that fail authentication.
+	HY2Masquerade string `yaml:"hy2_masquerade"`
 }
 
 type CertConfig struct {

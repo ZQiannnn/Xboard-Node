@@ -55,6 +55,9 @@ func buildConfig(kcfg config.KernelConfig, nc *model.NodeSpec, users []model.Use
 
 	inbound := buildInbound(nc, users, tc)
 	if inbound != nil {
+		if inbound["type"] == "hysteria2" && kcfg.HY2Masquerade != "" {
+			inbound["masquerade"] = kcfg.HY2Masquerade
+		}
 		cfg["inbounds"] = []M{inbound}
 	}
 

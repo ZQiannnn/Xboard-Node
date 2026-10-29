@@ -887,3 +887,21 @@ func TestExtractECHInbound(t *testing.T) {
 		})
 	}
 }
+
+func TestBuildConfig_HY2Masquerade(t *testing.T) {
+	tc := kernel.TLSCert{CertPEM: []byte("CERT"), KeyPEM: []byte("KEY")}
+	kcfg := config.KernelConfig{LogLevel: "warn", HY2Masquerade: "file:///etc/xboard-node/www"}
+
+	hy2 := buildConfig(kcfg, testNodeSpec(&panel.NodeConfig{Protocol: "hysteria", ServerPort: 444, Version: 2}), testUsers, tc)
+	assertMapValue(t, hy2["inbounds"].([]M)[0], "masquerade", "file:///etc/xboard-node/www")
+
+	at := buildConfig(kcfg, testNodeSpec(&panel.NodeConfig{Protocol: "anytls", ServerPort: 443}), testUsers, tc)
+	if _, ok := at["inbounds"].([]M)[0]["masquerade"]; ok {
+		t.Fatal("masquerade must only apply to hysteria2")
+	}
+
+	plain := buildConfig(config.KernelConfig{LogLevel: "warn"}, testNodeSpec(&panel.NodeConfig{Protocol: "hysteria", ServerPort: 444, Version: 2}), testUsers, tc)
+	if _, ok := plain["inbounds"].([]M)[0]["masquerade"]; ok {
+		t.Fatal("masquerade must be absent when not configured")
+	}
+}
